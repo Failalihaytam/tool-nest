@@ -1,6 +1,7 @@
 "use client"
 import axios from 'axios'
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { getLocalStorage, setLocalStorage, removeLocalStorage } from "@/utils/storage";
 
 // API base URL
 const API_URL = 'https://toolnest-one.vercel.app/api/api'
@@ -56,7 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Configure axios defaults
   useEffect(() => {
-    const token = localStorage.getItem('auth_token')
+    const token = getLocalStorage('auth_token')
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
     }
@@ -66,7 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Check if user is logged in
     const checkAuth = async () => {
       try {
-        const token = localStorage.getItem('auth_token')
+        const token = getLocalStorage('auth_token')
         
         if (token) {
           // Set the auth header
@@ -87,7 +88,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           } catch (apiError) {
             // Token might be invalid or expired
             console.error("API error:", apiError)
-            localStorage.removeItem('auth_token')
+            removeLocalStorage('auth_token')
             delete axios.defaults.headers.common['Authorization']
           }
         }
@@ -119,7 +120,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response.data.status === 'success' && response.data.data) {
         const newUser = response.data.data.user;
         const token = response.data.data.token;
-        localStorage.setItem('auth_token', token);
+        setLocalStorage('auth_token', token);
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         setUser(newUser);
         return true;
@@ -153,7 +154,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const token = response.data.data.token
         
         // Store the token
-        localStorage.setItem('auth_token', token)
+        setLocalStorage('auth_token', token)
         
         // Set the auth header
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
@@ -183,7 +184,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     try {
       // Call logout API if available
-      const token = localStorage.getItem('auth_token')
+      const token = getLocalStorage('auth_token')
       if (token) {
         await axios.post(`${API_URL}/logout`)
       }
@@ -192,7 +193,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       // Clear local storage and state regardless of API success
       setUser(null)
-      localStorage.removeItem('auth_token')
+      removeLocalStorage('auth_token')
       delete axios.defaults.headers.common['Authorization']
       window.location.href = '/'; // Redirect to home page
     }
@@ -215,7 +216,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       // In a real implementation, this would come from the backend after OAuth
       const mockToken = "google-mock-token"
-      localStorage.setItem('auth_token', mockToken)
+      setLocalStorage('auth_token', mockToken)
       axios.defaults.headers.common['Authorization'] = `Bearer ${mockToken}`
     } catch (error) {
       console.error("Google login error:", error)
@@ -242,7 +243,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       // In a real implementation, this would come from the backend after OAuth
       const mockToken = "facebook-mock-token"
-      localStorage.setItem('auth_token', mockToken)
+      setLocalStorage('auth_token', mockToken)
       axios.defaults.headers.common['Authorization'] = `Bearer ${mockToken}`
     } catch (error) {
       console.error("Facebook login error:", error)
@@ -256,7 +257,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     try {
       // Check if we have a token and user
-      const token = localStorage.getItem('auth_token');
+      const token = getLocalStorage('auth_token');
       if (!token || !user) {
         console.error("No authentication token or user found");
         return false;

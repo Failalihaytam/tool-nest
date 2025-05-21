@@ -1,6 +1,7 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { getLocalStorage, setLocalStorage } from "@/utils/storage";
 
 type Theme = 'light' | 'dark'
 
@@ -25,7 +26,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
 
   useEffect(() => {
     // Check for saved theme in localStorage
-    const savedTheme = localStorage.getItem('theme') as Theme;
+    const savedTheme = getLocalStorage('theme') as Theme;
     if (savedTheme) {
       setTheme(savedTheme);
     } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -43,7 +44,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     }
     
     // Save theme to localStorage
-    localStorage.setItem('theme', theme);
+    setLocalStorage('theme', theme);
   }, [theme]);
 
   const toggleTheme = () => {

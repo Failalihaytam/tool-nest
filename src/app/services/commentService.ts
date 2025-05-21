@@ -1,4 +1,5 @@
 import { API_URL } from '../config';
+import { getLocalStorage } from "@/utils/storage";
 
 export interface Comment {
   id: string;
@@ -15,7 +16,7 @@ export const getComments = async (reservationId: string): Promise<Comment[]> => 
   try {
     const response = await fetch(`${API_URL}/reservations/${reservationId}/comments`, {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Authorization': `Bearer ${getLocalStorage('token')}`,
       },
     });
 
@@ -40,7 +41,7 @@ export const createComment = async (
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Authorization': `Bearer ${getLocalStorage('token')}`,
       },
       body: JSON.stringify({
         content,
@@ -68,7 +69,7 @@ export const updateCommentVisibility = async (
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Authorization': `Bearer ${getLocalStorage('token')}`,
       },
       body: JSON.stringify({
         isVisible,

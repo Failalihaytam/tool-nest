@@ -1,5 +1,6 @@
 import { LoginResponse } from "@/app/services/api";
 import axios from "axios";
+import { getLocalStorage } from "@/utils/storage";
 
 const API_URL = "https://toolnest-one.vercel.app/api/api"; // Adjust this to match your backend URL
 
@@ -12,7 +13,7 @@ const api = axios.create({
 
 // Add token to requests if it exists
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("auth_token");
+  const token = getLocalStorage("auth_token");
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
   }

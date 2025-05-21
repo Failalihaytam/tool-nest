@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getUserReservations, Reservation } from "@/app/services/reservationService";
+import { getLocalStorage } from "@/utils/storage";
 
 export default function SearchPage() {
   const [reservations, setReservations] = useState<Reservation[]>([]);
@@ -11,7 +12,7 @@ export default function SearchPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const token = typeof window !== "undefined" ? localStorage.getItem("auth_token") : null;
+    const token = getLocalStorage("auth_token");
     if (!token) {
       router.push("/auth/signin?redirect=/search");
       return;
